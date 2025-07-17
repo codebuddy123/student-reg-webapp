@@ -26,6 +26,17 @@
     {
       sh "${mavenHome}/bin/mvn deploy"
     }
+    
+    //Stopping the Tomcat Service Before the WAR deployment
+    stage("stopping tomcat")
+    {
+        sshagent(['tomcat-server']) {
+         sh """ echo Stopping the Tomcat Service
+                "ssh -o  StrictHostKeyChecking=no ec2-user@172.31.38.104 sudo systemctl stop tomcat"
+                "sleep 5"
+            """
+       }
+    }
 
     //Deploying the artifact into Tomcat Server
     stage("Tomcat Deployment")
@@ -35,8 +46,16 @@
        }
     }
 
-}
+    //Starting the Tomcat Service after the WAR Deployment
+     stage("starting tomcat")
+    {
+        sshagent(['tomcat-server']) {
+         sh """ echo Starting the Tomcat Service
+                "ssh -o  StrictHostKeyChecking=no ec2-user@172.31.38.104 sudo systemctl start tomcat"
+                "Successfully started tomcat"
+            """
        }
     }
 
 }
+      
