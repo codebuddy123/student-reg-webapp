@@ -34,7 +34,7 @@
         sshagent(['tomcat-server']) {
             sh """
                 echo Stopping the Tomcat Service
-                ssh -o StrictHostKeyChecking=no ec2-user@172.31.38.104 'sudo systemctl stop tomcat'
+                ssh -o StrictHostKeyChecking=no ec2-user@172.31.38.104 '/opt/tomcat/bin/shutdown.sh'
                 sleep 5
             """
         }
@@ -54,7 +54,7 @@
         sshagent(['tomcat-server']) {
             sh """
                 echo Starting the Tomcat Service
-                ssh -o StrictHostKeyChecking=no ec2-user@172.31.38.104 'sudo systemctl start tomcat'
+                ssh -o StrictHostKeyChecking=no ec2-user@172.31.38.104 '/opt/tomcat/bin/startup.sh'
                 echo Successfully started tomcat
             """
         }
