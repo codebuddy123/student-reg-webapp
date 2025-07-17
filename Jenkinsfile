@@ -43,6 +43,7 @@
     // Deploying the artifact into Tomcat Server
     stage("Tomcat Deployment") {
         sshagent(['tomcat-server']) {
+            sh "rm -rf target/student-reg-webapp.war"
             sh "scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ec2-user@172.31.38.104:/opt/tomcat/webapps"
         }
     }
