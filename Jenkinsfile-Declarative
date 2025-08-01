@@ -25,10 +25,10 @@ pipeline {
         stage('Set Build Metadata') {
             steps {
               script {
-            // Get Git Branch Name
+                // Get Git Branch Name
                  env.BRANCH_NAME = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
 
-            // Get Build Triggered User (Requires Build User Vars Plugin)
+                // Get Build Triggered User (Requires Build User Vars Plugin)
                 wrap([$class: 'BuildUser']) {
                 env.BUILD_USER = env.BUILD_USER ?: 'Automated'
             }
@@ -102,7 +102,7 @@ def sendSuccessEmail() {
                         </tr>
                     </table>
                     <br/>
-                    <p style="font-size:small;color:blue;">This is an automated message from Jenkins CI/CD Pipeline.</p>
+                    <p style="font-size:small;color:brown;">This is an automated message from Jenkins CI/CD Pipeline.</p>
                 </body>
             </html>
         """
@@ -135,7 +135,7 @@ def sendFailureEmail() {
                         </tr>
                     </table>
                     <br/>
-                    <p style="font-size:small;color:blue;">This is an automated message from Jenkins CI/CD Pipeline.</p>
+                    <p style="font-size:small;color:brown;">This is an automated message from Jenkins CI/CD Pipeline.</p>
                 </body>
             </html>
         """
