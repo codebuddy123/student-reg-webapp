@@ -21,9 +21,23 @@ pipeline {
                 git branch: 'main', credentialsId: 'ce4402e7-050c-46c0-b476-9b9e33e8db44', url: 'https://github.com/codebuddy123/student-reg-webapp.git'
             }
         }
+
+        stage('Set Build Metadata') {
+            steps {
+              script {
+            // Get Git Branch Name
+                 env.BRANCH_NAME = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
+
+            // Get Build Triggered User (Requires Build User Vars Plugin)
+                wrap([$class: 'BuildUser']) {
+                env.BUILD_USER = env.BUILD_USER ?: 'Automated'
+            }
+        }
+    }
+}
         stage('Build the Package') {
             steps {
-                sh 'mvn cleanas package' //  Use Maven for building the package
+                sh 'mvn clean package' //  Use Maven for building the package
             }
         }
         stage('Run Sonar Analysis') {
@@ -83,12 +97,12 @@ def sendSuccessEmail() {
                         </tr>
                         <tr>
                             <td style="text-align:center;">SUCCESS</td>
-                            <td style="text-align:center;">${env.BUILD_USER_ID}</td>
+                            <td style="text-align:center;">${env.BUILD_USER}</td>
                             <td style="text-align:center;">${env.BRANCH_NAME}</td>
                         </tr>
                     </table>
                     <br/>
-                    <p style="font-size:small;color:gray;">This is an automated message from Jenkins CI/CD Pipeline.</p>
+                    <p style="font-size:small;color:blue;">This is an automated message from Jenkins CI/CD Pipeline.</p>
                 </body>
             </html>
         """
@@ -116,12 +130,12 @@ def sendFailureEmail() {
                         </tr>
                         <tr>
                             <td style="text-align:center;">FAILURE</td>
-                            <td style="text-align:center;">${env.BUILD_USER_ID}</td>
+                            <td style="text-align:center;">${env.BUILD_USER}</td>
                             <td style="text-align:center;">${env.BRANCH_NAME}</td>
                         </tr>
                     </table>
                     <br/>
-                    <p style="font-size:small;color:gray;">This is an automated message from Jenkins CI/CD Pipeline.</p>
+                    <p style="font-size:small;color:blue;">This is an automated message from Jenkins CI/CD Pipeline.</p>
                 </body>
             </html>
         """
