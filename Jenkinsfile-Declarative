@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment{
-        SONARQUBE_URL = 'http://40.192.67.215:9000'
+        SONARQUBE_URL = 'http://40.192.67.216:9000'
         SONARQUBE_TOKEN = 'sonarcredentials'
         TOMCAT_URL = '172.31.38.104'
         TOMCAT_USER = 'ec2-user'
@@ -53,11 +53,11 @@ pipeline {
     post {
         success {
             slackSend(channel: 'app-jenkins', attachments: [[color: 'good', text: "Build Successful: ${env.JOB_NAME} #${env.BUILD_NUMBER}"]])
-            mail to: 'javaforash@gmail.com', subject: "Build Successful: ${env.JOB_NAME}", body: "The build was successful."
+            
         }
         failure {
             slackSend(channel: 'app-jenkins', attachments: [[color: 'danger', text: "Build Failure: ${env.JOB_NAME} #${env.BUILD_NUMBER}"]])
-            mail to: 'javaforash@gmail.com', subject: "Build Failed: ${env.JOB_NAME}", body: "The build has failed."
+            
         }
     }
 }
