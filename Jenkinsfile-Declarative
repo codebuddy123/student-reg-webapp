@@ -7,7 +7,7 @@ pipeline {
         TOMCAT_URL = '172.31.38.104'
         TOMCAT_USER = 'ec2-user'
     }
-    trigger {
+    triggers {
         githubPush() // Trigger the pipeline on GitHub push events
     }
     
