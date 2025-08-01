@@ -37,7 +37,7 @@ pipeline {
 }
         stage('Build the Package') {
             steps {
-                sh 'mvns clean package' //  Use Maven for building the package
+                sh 'mvn clean package' //  Use Maven for building the package
             }
         }
         stage('Run Sonar Analysis') {
@@ -79,7 +79,7 @@ pipeline {
 def sendSuccessEmail() {
     emailext (
         subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-        to: 'javaforash@gmail.com,pujithaparuchuri1@gmail.com',
+        to: 'javaforash@gmail.com,varungopal286@gmail.com,usha.mateti20@gmail.com',
         mimeType: 'text/html',
         body: """
             <html>
@@ -112,7 +112,7 @@ def sendSuccessEmail() {
 def sendFailureEmail() {
     emailext (
         subject: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-        to: 'javaforash@gmail.com',
+        to: 'javaforash@gmail.com,varungopal286@gmail.com,usha.mateti20@gmail.com',
         mimeType: 'text/html',
         body: """
             <html>
