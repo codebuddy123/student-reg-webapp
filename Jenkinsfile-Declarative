@@ -3,7 +3,7 @@ pipeline {
 
     environment{
         SONARQUBE_URL = 'http://40.192.67.216:9000'
-        SONARQUBE_TOKEN = 'sonarcredentials'
+        SONARQUBE_TOKEN = credentials('sonarcredentials') // Use Jenkins credentials for SonarQube token
         TOMCAT_URL = '172.31.38.104'
         TOMCAT_USER = 'ec2-user'
     }
@@ -44,7 +44,7 @@ pipeline {
                     sh 'echo "Cleaning up old artifact on Tomcat server..."'
                     sh 'rm -f /opt/tomcat/webapps/student-reg-webapp.war"' 
                     sh 'echo "Uploading artifact to Tomcat server..."'
-                    sh 'scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ${TOMCAT_USER}@${TOMCAT_URL}:/opt/tomcat/webapps/' 
+                    sh "scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ${TOMCAT_USER}@${TOMCAT_URL}:/opt/tomcat/webapps/"
                     
                 }
                 
