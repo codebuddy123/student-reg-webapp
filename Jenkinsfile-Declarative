@@ -23,7 +23,7 @@ pipeline {
         }
         stage('Build the Package') {
             steps {
-                sh 'mvn clean package' //  Use Maven for building the package
+                sh 'mvn cleanas package' //  Use Maven for building the package
             }
         }
         stage('Run Sonar Analysis') {
