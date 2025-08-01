@@ -7,7 +7,9 @@ pipeline {
         TOMCAT_URL = '172.31.38.104'
         TOMCAT_USER = 'ec2-user'
     }
-
+    trigger {
+        githubPush() // Trigger the pipeline on GitHub push events
+    }
     
     tools {
         maven 'maven-3.9.10' // Specify the Maven version
@@ -26,7 +28,7 @@ pipeline {
         }
         stage('Run Sonar Analysis') {
             steps {
-                sh 'mvn sonar:sonar -Dsonar.projectKey=student-reg-webapp -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.login=${SONARQUBE_TOKEN}'
+                sh 'mvn sonar:sonar -Dsonar.projectKey=student-reg-webapp -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.token=${SONARQUBE_TOKEN}'
             }
         }
         stage('Upload to Nexus') { 
