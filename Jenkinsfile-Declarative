@@ -40,10 +40,7 @@ pipeline {
         stage('Upload Artifact to Tomcat Server') {
             steps {
                 sshagent(['tomcat-server']) {
-                    
-                    sh 'echo "Cleaning up old artifact on Tomcat server..."'
-                    sh 'rm -f /opt/tomcat/webapps/student-reg-webapp.war"' 
-                    sh 'echo "Uploading artifact to Tomcat server..."'
+                    sh "rm -f /opt/tomcat/webapps/student-reg-webapp.war" // Remove existing WAR file if it exists
                     sh "scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ${TOMCAT_USER}@${TOMCAT_URL}:/opt/tomcat/webapps/"
                     
                 }
