@@ -79,7 +79,7 @@ pipeline {
 def sendSuccessEmail() {
     emailext (
         subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-        to: 'javaforash@gmail.com,varungopal286@gmail.com,usha.mateti20@gmail.com',
+        to: 'javaforash@gmail.com',
         mimeType: 'text/html',
         body: """
             <html>
@@ -102,7 +102,7 @@ def sendSuccessEmail() {
                         </tr>
                     </table>
                     <br/>
-                    <p style="font-size:small;color:brown;">This is an automated message from Jenkins CI/CD Pipeline.</p>
+                    <p style="font-size:small;color:green;">This is an automated message from Jenkins CI/CD Pipeline.</p>
                 </body>
             </html>
         """
@@ -112,7 +112,7 @@ def sendSuccessEmail() {
 def sendFailureEmail() {
     emailext (
         subject: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-        to: 'javaforash@gmail.com,varungopal286@gmail.com,usha.mateti20@gmail.com',
+        to: 'javaforash@gmail.com',
         mimeType: 'text/html',
         body: """
             <html>
@@ -135,7 +135,7 @@ def sendFailureEmail() {
                         </tr>
                     </table>
                     <br/>
-                    <p style="font-size:small;color:brown;">This is an automated message from Jenkins CI/CD Pipeline.</p>
+                    <p style="font-size:small;color:red;">This is an automated message from Jenkins CI/CD Pipeline.</p>
                 </body>
             </html>
         """
