@@ -23,12 +23,12 @@ pipeline {
         }
         stage('Build the Package') {
             steps {
-                sh 'mvn package' //  Use Maven for building the package
+                sh 'mvn clean package' //  Use Maven for building the package
             }
         }
         stage('Run Sonar Analysis') {
             steps {
-                sh 'mvn sonar:sonar -Dsonar.projectKey=student-reg-webapp -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.token=${SONARQUBE_TOKEN}'
+                sh "mvn sonar:sonar -Dsonar.projectKey=student-reg-webapp -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.token=${SONARQUBE_TOKEN}"
             }
         }
         stage('Upload to Nexus') { 
