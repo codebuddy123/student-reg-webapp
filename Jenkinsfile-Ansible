@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment{
-        TOMCAT_URL = '172.31.38.104'
+        TOMCAT_URL = '13.235.79.111'
         TOMCAT_USER = 'ec2-user'
     }
     tools {
