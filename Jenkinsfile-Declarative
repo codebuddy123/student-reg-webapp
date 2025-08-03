@@ -69,12 +69,12 @@ pipeline {
     post {
         success {
             sendSuccessEmail()
-            sendSuccessSlackNotification
+            sendSuccessSlackNotification() // Send Slack notification on successful build
             
         }
         failure {
             sendFailureEmail()
-            sendFailureSlackNotification()
+            sendFailureSlackNotification()  // Send Slack notification on build failure
             
         }
         always {
