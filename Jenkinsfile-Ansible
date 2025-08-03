@@ -40,6 +40,7 @@ pipeline {
 
                         ssh -o StrictHostKeyChecking=no   -i ${SSH_KEY_FILE} ${SSH_USER}@${TOMCAT_URL} '
                             cat ${SSH_KEY_FILE} > /home/ec2-user/demo.pem &&
+                            chmod 400 /home/ec2-user/demo.pem &&
                             cd /home/ec2-user/ansible &&
                             ansible-playbook -i inventory tomcat_deployment.yaml
                         '
