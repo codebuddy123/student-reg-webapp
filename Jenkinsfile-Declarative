@@ -37,10 +37,11 @@ pipeline {
 }
         stage('Build the Package') {
             steps {
+                sendStartSlackNotification() // Send Slack notification when build starts
                 sh 'mvn clean package' //  Use Maven for building the package
             }
         }
-        stage('Run Sonar Analysis') {
+     /*   stage('Run Sonar Analysis') {
             steps {
                 sh "mvn sonar:sonar -Dsonar.projectKey=student-reg-webapp -Dsonar.host.url=${SONARQUBE_URL} -Dsonar.token=${SONARQUBE_TOKEN}"
             }
@@ -50,6 +51,8 @@ pipeline {
                 sh 'mvn deploy' // Command to upload artifact to Nexus
             }
         } 
+        */
+
         // Stage to upload the artifact to Tomcat server
         stage('Upload Artifact to Tomcat Server') {
             steps {
@@ -66,20 +69,24 @@ pipeline {
     post {
         success {
             sendSuccessEmail()
-            slackSend(channel: 'app-jenkins', attachments: [[color: 'good', text: "Build Successful: ${env.JOB_NAME} #${env.BUILD_NUMBER}"]])
+            sendSuccessSlackNotification
             
         }
         failure {
             sendFailureEmail()
-            slackSend(channel: 'app-jenkins', attachments: [[color: 'danger', text: "Build Failure: ${env.JOB_NAME} #${env.BUILD_NUMBER}"]])
+            sendFailureSlackNotification()
             
+        }
+        always {
+            // Clean up workspace after build
+            cleanWs()
         }
     }
 }
 def sendSuccessEmail() {
     emailext (
         subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-        to: 'javaforash@gmail.com',
+        to: 'javaforash@gmail.com,techayush777@gmail.com',
         mimeType: 'text/html',
         body: """
             <html>
@@ -102,7 +109,7 @@ def sendSuccessEmail() {
                         </tr>
                     </table>
                     <br/>
-                    <p style="font-size:small;color:green;">This is an automated message from Jenkins CI/CD Pipeline.</p>
+                    <p style="font-size:small;color:gray;">This is an automated message from Jenkins CI/CD Pipeline.</p>
                 </body>
             </html>
         """
@@ -112,7 +119,7 @@ def sendSuccessEmail() {
 def sendFailureEmail() {
     emailext (
         subject: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-        to: 'javaforash@gmail.com',
+        to: 'javaforash@gmail.com,techayush777@gmail.com',
         mimeType: 'text/html',
         body: """
             <html>
@@ -135,9 +142,49 @@ def sendFailureEmail() {
                         </tr>
                     </table>
                     <br/>
-                    <p style="font-size:small;color:red;">This is an automated message from Jenkins CI/CD Pipeline.</p>
+                    <p style="font-size:small;color:gray;">This is an automated message from Jenkins CI/CD Pipeline.</p>
                 </body>
             </html>
         """
+    )
+}
+// Send Success Slack notifications with Build Status, Build Number, Build URL, Build User and Branch Name
+def sendSuccessSlackNotification() {
+    slackSend(
+        channel: 'app-jenkins',
+        attachments: [[
+            color: 'good',
+            text: "Build Successful: ${env.JOB_NAME} #${env.BUILD_NUMBER}\n" +
+                  "Build URL: ${env.BUILD_URL}\n" +
+                  "Triggered By: ${env.BUILD_USER}\n" +
+                  "Branch: ${env.BRANCH_NAME}"
+        ]]
+    )
+}
+// Send Failure Slack notifications with Build Status, Build Number, Build URL, Build User and Branch Name
+def sendFailureSlackNotification() {
+    slackSend(
+        channel: 'app-jenkins',
+        attachments: [[
+            color: 'danger',
+            text: "Build Failure: ${env.JOB_NAME} #${env.BUILD_NUMBER}\n" +
+                  "Build URL: ${env.BUILD_URL}\n" +
+                  "Triggered By: ${env.BUILD_USER}\n" +
+                  "Branch: ${env.BRANCH_NAME}"
+        ]]
+    )
+}
+
+// Send Start Slack notifications with Build Status, Build Number, Build URL, Build User and Branch Name
+def sendStartSlackNotification() {
+    slackSend(
+        channel: 'app-jenkins',
+        attachments: [[
+            color: 'warning',
+            text: "Build Started: ${env.JOB_NAME} #${env.BUILD_NUMBER}\n" +
+                  "Build URL: ${env.BUILD_URL}\n" +
+                  "Triggered By: ${env.BUILD_USER}\n" +
+                  "Branch: ${env.BRANCH_NAME}"
+        ]]
     )
 }
