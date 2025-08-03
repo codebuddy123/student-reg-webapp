@@ -37,7 +37,7 @@ pipeline {
         // Run Ansible playbook to deploy the application
         stage('Deploy Application using Ansible') {
             steps {
-                withCredentials('ansiblecredentials', var: 'ANSIBLE_SSH_KEY') {
+                withCredentials(credentialsId:'ansiblecredentials', var: 'ANSIBLE_SSH_KEY') {
                     sshagent(['ansiblecredentials']) {
                         // Get the PEM content from the Jenkins credentials and save it to a file
                         sh  'echo "${ANSIBLE_SSH_KEY}" > demo.pem'
