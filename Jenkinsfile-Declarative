@@ -86,7 +86,7 @@ pipeline {
 def sendSuccessEmail() {
     emailext (
         subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-        to: 'javaforash@gmail.com,techayush777@gmail.com',
+        to: 'javaforash@gmail.com',
         mimeType: 'text/html',
         body: """
             <html>
