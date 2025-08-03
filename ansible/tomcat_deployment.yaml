@@ -1,0 +1,60 @@
+---
+- name: Setup Tomcat on managed nodes
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install wget
+      package:
+        name: wget
+        state: present
+
+    -  name: Copy the Java setup file.
+       copy:
+         src: javasetup.sh
+         dest: /opt
+         mode: '0755'
+
+    - name: Run the Java setup script
+      command: /opt/javasetup.sh
+      args:
+        creates: /opt/java-11 # This ensures the script runs only if the directory does not exist
+
+    - name: Download Tomcat
+      get_url:
+        url: https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.107/bin/apache-tomcat-9.0.107.tar.gz
+        dest: /tmp/apache-tomcat-9.0.107.tar.gz
+
+    - name: Extract Tomcat
+      unarchive:
+        src: /tmp/apache-tomcat-9.0.107.tar.gz
+        dest: /opt/
+        remote_src: yes
+
+    - name: Add user before closing tomcat-users tag
+      lineinfile:
+        path: /opt/apache-tomcat-9.0.107/conf/tomcat-users.xml
+        insertbefore: '^\s*</tomcat-users>'
+        line: '<user username="ashish2" password="ashish" roles="manager-gui,admin-gui,manager-script"/>'
+        state: present   # Ensures the line is added only if it doesn't exist
+
+    - name: Comment Valve tag in the context.xml of manager so that the webpage is accessible outside the localhost.
+      lineinfile:
+        path: /opt/apache-tomcat-9.0.107/webapps/manager/META-INF/context.xml
+        regexp: '<Valve className="org.apache.catalina.valves.RemoteAddrValve"'
+        line: '<!-- <Valve className="org.apache.catalina.valves.RemoteAddrValve"/> -->'
+
+    - name: Comment Valve tag in the context.xml of host-manager so that the webpage is accessible outside the localhost.
+      lineinfile:
+        path: /opt/apache-tomcat-9.0.107/webapps/host-manager/META-INF/context.xml
+        regexp: '<Valve className="org.apache.catalina.valves.RemoteAddrValve"'
+        line: '<!-- <Valve className="org.apache.catalina.valves.RemoteAddrValve"/> -->'
+
+    - name: Start Tomcat service
+      shell:
+        cmd: /opt/apache-tomcat-9.0.107/bin/startup.sh
+
+    - name: Copy war file  to webapps folder of Managed Nodes 
+      copy:
+        src: /home/ec2-user/ansible/student-reg-webapp.war
+        dest: /opt/apache-tomcat-9.0.107/webapps/
+        mode: '0644'

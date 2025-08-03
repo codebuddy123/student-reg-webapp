@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+
+    environment{
+        TOMCAT_URL = '172.31.38.104'
+        TOMCAT_USER = 'ec2-user'
+    }
+    tools {
+        maven 'maven-3.9.10' // Specify the Maven version
+       
+    }
+    stages {
+        stage('Git Checkout') {
+            steps {
+                git branch: 'main', credentialsId: 'ce4402e7-050c-46c0-b476-9b9e33e8db44', url: 'https://github.com/codebuddy123/student-reg-webapp.git'
+            }
+        }
+
+        stage('Build the Package') {
+            steps {
+
+            sh 'mvn clean package' //  Use Maven for building the package
+
+            }
+        }
+
+        // Copy the ansible folder from workspace on to the Ansible controller
+        stage('Copying ansible folder and WAR from Workspace to the Controller') {
+            steps {
+                sshagent(['ansiblecredentials']) {
+                    sh "scp -o StrictHostKeyChecking=no -r ansible ${TOMCAT_USER}@${TOMCAT_URL}:/home/ec2-user/"
+                    sh "scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ${TOMCAT_USER}@${TOMCAT_URL}:/home/ec2-user/ansible/"
+               }
+            }
+
+        }
+        // Run Ansible playbook to deploy the application
+        stage('Deploy Application using Ansible') {
+            steps {
+                withCredentials('ansiblecredentials', var: 'ANSIBLE_SSH_KEY') {
+                    sshagent(['ansiblecredentials']) {
+                        // Get the PEM content from the Jenkins credentials and save it to a file
+                        sh  'echo "${ANSIBLE_SSH_KEY}" > demo.pem'
+                        // Ensure the Ansible playbook is executed on the remote server after getting the Pem content from var to Demo.pem
+                        sh "ssh -o StrictHostKeyChecking=no -i ${ANSIBLE_SSH_KEY} ${TOMCAT_USER}@${TOMCAT_URL} 'ansible-playbook -i /home/ec2-user/ansible/inventory /home/ec2-user/ansible/tomcat_deployment.yaml'"
+
+                     }
+                    
+                }
+            }
+        }
+    }
+}
+
