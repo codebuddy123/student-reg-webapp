@@ -37,10 +37,11 @@ pipeline {
         // Run Ansible playbook to deploy the application
         stage('Deploy Application using Ansible') {
             steps {
-                withCredentials(credentialsId:'ansiblecredentials', var: 'ANSIBLE_SSH_KEY') {
+                // variable holds the path of the temp file where credentials are stored in Jenkins Server
+                withCredentials(credentialsId:'ansiblecredentials', variable: 'ANSIBLE_SSH_KEY') {
                     sshagent(['ansiblecredentials']) {
-                        // Get the PEM content from the Jenkins credentials and save it to a file
-                        sh  'echo "${ANSIBLE_SSH_KEY}" > demo.pem'
+                        // Get the PEM content from the Temporary path and save it to a file
+                        sh 'cat "${ANSIBLE_SSH_KEY}" > demo.pem'
                         // Ensure the Ansible playbook is executed on the remote server after getting the Pem content from var to Demo.pem
                         sh "ssh -o StrictHostKeyChecking=no -i ${ANSIBLE_SSH_KEY} ${TOMCAT_USER}@${TOMCAT_URL} 'ansible-playbook -i /home/ec2-user/ansible/inventory /home/ec2-user/ansible/tomcat_deployment.yaml'"
 
