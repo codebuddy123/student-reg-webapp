@@ -38,7 +38,7 @@ pipeline {
         stage('Deploy Application using Ansible') {
             steps {
                 // variable holds the path of the temp file where credentials are stored in Jenkins Server
-                withCredentials([file(credentialsId: 'ansiblecredentials', variable: 'ANSIBLE_SSH_KEY')]) {
+                withCredentials([sshUserPrivateKey(credentialsId: 'ansiblecredentials', variable: 'ANSIBLE_SSH_KEY')]) {
                     sshagent(['ansiblecredentials']) {
                         // Get the PEM content from the Temporary path and save it to a file
                         sh 'cat "${ANSIBLE_SSH_KEY}" > demo.pem'
