@@ -35,18 +35,19 @@ pipeline {
         stage('Run Ansible Playbook on Controller') {
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'ansiblecredentials', usernameVariable: 'SSH_USER', keyFileVariable: 'SSH_KEY_FILE')]) {
-                    sh '''
-                        echo "SSHing into Controller   and Running Playbook..."
-
-                        ssh -o StrictHostKeyChecking=no   -i ${SSH_KEY_FILE} ${SSH_USER}@${TOMCAT_URL} '
-                            cat ${SSH_KEY_FILE} > /home/ec2-user/demo.pem &&
-                            chmod 400 /home/ec2-user/demo.pem &&
-                            cd /home/ec2-user/ansible &&
-                            ansible-playbook -i inventory tomcat_deployment.yaml
-                        '
-                    '''
-                }
-            }
-        }
+                    sh """
+                       echo "Copying PEM file to Controller..."
+                       scp -o StrictHostKeyChecking=no -i $SSH_KEY_FILE $SSH_KEY_FILE $SSH_USER@${TOMCAT_URL}:/home/ec2-user/ansible/demo.pem
+     
+                       echo "Running Ansible Playbook on Controller..."
+                       ssh -o StrictHostKeyChecking=no -i $SSH_KEY_FILE $SSH_USER@${TOMCAT_URL} '
+                         chmod 400 /home/ec2-user/ansible/demo.pem &&
+                         cd /home/ec2-user/ansible &&
+                         ansible-playbook -i inventory tomcat_deployment.yaml
+                '
+            """
+              }
+           }
+       }
     }
 }
