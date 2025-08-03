@@ -1,14 +1,15 @@
 pipeline {
     agent any
 
-    environment{
+    environment {
         TOMCAT_URL = '13.235.79.111'
         TOMCAT_USER = 'ec2-user'
     }
+
     tools {
         maven 'maven-3.9.10' // Specify the Maven version
-       
     }
+
     stages {
         stage('Git Checkout') {
             steps {
@@ -18,38 +19,33 @@ pipeline {
 
         stage('Build the Package') {
             steps {
-
-            sh 'mvn clean package' //  Use Maven for building the package
-
+                sh 'mvn   clean   package' // Use Maven for building the package
             }
         }
 
-        // Copy the ansible folder from workspace on to the Ansible controller
         stage('Copying ansible folder and WAR from Workspace to the Controller') {
             steps {
                 sshagent(['ansiblecredentials']) {
-                    sh "scp -o StrictHostKeyChecking=no -r ansible ${TOMCAT_USER}@${TOMCAT_URL}:/home/ec2-user/"
-                    sh "scp -o StrictHostKeyChecking=no target/student-reg-webapp.war ${TOMCAT_USER}@${TOMCAT_URL}:/home/ec2-user/ansible/"
-               }
+                    sh "scp -o StrictHostKeyChecking=no   -r ansible ${TOMCAT_USER}@${TOMCAT_URL}:/home/ec2-user/"
+                    sh "scp -o StrictHostKeyChecking=no target/student-reg-webapp.war   ${TOMCAT_USER}@${TOMCAT_URL}:/home/ec2-user/ansible/"
+                }
             }
-
         }
-        // Run Ansible playbook to deploy the application
-        stage('Deploy Application using Ansible') {
-            steps {
-                // variable holds the path of the temp file where credentials are stored in Jenkins Server
-                withCredentials([sshUserPrivateKey(credentialsId: 'ansiblecredentials', variable: 'ANSIBLE_SSH_KEY')]) {
-                    sshagent(['ansiblecredentials']) {
-                        // Get the PEM content from the Temporary path and save it to a file
-                        sh 'cat "${ANSIBLE_SSH_KEY}" > demo.pem'
-                        // Ensure the Ansible playbook is executed on the remote server after getting the Pem content from var to Demo.pem
-                        sh "ssh -o StrictHostKeyChecking=no -i ${ANSIBLE_SSH_KEY} ${TOMCAT_USER}@${TOMCAT_URL} 'ansible-playbook -i /home/ec2-user/ansible/inventory /home/ec2-user/ansible/tomcat_deployment.yaml'"
 
-                     }
-                    
+        stage('Run Ansible Playbook on Controller') {
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'ansiblecredentials', usernameVariable: 'SSH_USER', keyFileVariable: 'SSH_KEY_FILE')]) {
+                    sh '''
+                        echo "SSHing into Controller   and Running Playbook..."
+
+                        ssh -o StrictHostKeyChecking=no   -i $SSH_KEY_FILE $SSH_USER@<CONTROLLER_PUBLIC_IP> '
+                            cat $SSH_KEY_FILE > /home/ec2-user/demo.pem &&
+                            cd /home/ec2-user/ansible &&
+                            ansible-playbook -i inventory tomcat_deployment.yaml
+                        '
+                    '''
                 }
             }
         }
     }
 }
-
