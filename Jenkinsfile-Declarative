@@ -38,7 +38,7 @@ pipeline {
         stage('Build the Package') {
             steps {
                 sendStartSlackNotification() // Send Slack notification when build starts
-                sh 'mvns clean package' //  Use Maven for building the package
+                sh 'mvn clean package' //  Use Maven for building the package
             }
         }
      /*   stage('Run Sonar Analysis') {
