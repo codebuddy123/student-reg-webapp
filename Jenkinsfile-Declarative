@@ -120,7 +120,6 @@ def sendFailureEmail() {
     emailext (
         subject: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
         to: 'javaforash@gmail.com',
-        bcc: 'techayush777@gmail.com', // BCC to Ayush
         mimeType: 'text/html',
         body: """
             <html>
