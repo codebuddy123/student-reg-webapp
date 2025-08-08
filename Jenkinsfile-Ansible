@@ -34,6 +34,7 @@ pipeline {
 
         stage('Run Ansible Playbook on Controller') {
             steps {
+               //keyFileVariable contains the path where sshkey is stored
                 withCredentials([sshUserPrivateKey(credentialsId: 'ansiblecredentials', usernameVariable: 'SSH_USER', keyFileVariable: 'SSH_KEY_FILE')]) {
                     sh """
                        echo "Copying PEM file to Controller..."
