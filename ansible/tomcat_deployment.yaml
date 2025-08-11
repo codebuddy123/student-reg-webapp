@@ -60,3 +60,4 @@
         src: ../target/student-reg-webapp.war # while running from jenkins
         dest: /opt/apache-tomcat-9.0.108/webapps/
         mode: '0644'
+        force: yes      # Overwrite existing WAR file
