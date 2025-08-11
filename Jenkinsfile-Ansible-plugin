@@ -21,7 +21,7 @@ pipeline {
         //We are installing Ansible directly on Jenkins Server and deploying through it using plugin.
         stage('Deployment') {
             steps {
-               ansiblePlaybook become: true, colorized: true, credentialsId: 'tomcat-server', installation: 'ansible-new', inventory: '/var/lib/jenkins/student-reg-webapp/ansible/inventory', playbook: '/var/lib/jenkins/student-reg-webapp/ansible/tomcat_deployment.yaml'
+               ansiblePlaybook become: true, colorized: true, credentialsId: 'tomcat-server', installation: 'ansible-new', inventory: 'ansible/inventory', playbook: 'ansible/tomcat_deployment.yaml'
            }
        }
     }
