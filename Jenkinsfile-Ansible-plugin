@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+    tools {
+        maven 'maven-3.9.10' // Specify the Maven version
+        ansible 'ansible-new'
+    }
+
+    stages {
+        stage('Git Checkout') {
+            steps {
+                git branch: 'main', credentialsId: 'ce4402e7-050c-46c0-b476-9b9e33e8db44', url: 'https://github.com/codebuddy123/student-reg-webapp.git'
+            }
+        }
+
+        stage('Build the Package') {
+            steps {
+                sh 'mvn clean package' // Use Maven for building the package
+            }
+        }
+        
+        //We are installing Ansible directly on Jenkins Server and deploying through it using plugin.
+        stage('Deployment') {
+            steps {
+               ansiblePlaybook become: true, colorized: true, credentialsId: 'tomcat-server', installation: 'ansible-new', inventory: '/var/lib/jenkins/student-reg-webapp/ansible/inventory', playbook: '/var/lib/jenkins/student-reg-webapp/ansible/tomcat_deployment.yaml'
+           }
+       }
+    }
