@@ -52,15 +52,11 @@
 
     -  name: Copy war file  to webapps folder of Managed Nodes 
        copy:
-        #src: /home/ec2-user/ansible/student-reg-webapp.war # while running from controller
-        src: ../target/student-reg-webapp.war # while running from jenkins
+        src: /home/ec2-user/ansible/student-reg-webapp.war # while running from controller
+       #src: ../target/student-reg-webapp.war # while running from jenkins
         dest: /opt/apache-tomcat-9.0.108/webapps/
         mode: '0644'
-        group: ec2-user 
-        owner: ec2-user
-        force: yes      # Overwrite existing WAR file whenever new deployment happens
 
     - name: Start Tomcat service
-      service:
-        name: tomcat
-        state: restarted
+      command:
+        args: /opt/apache-tomcat-9.0.108/bin/startup.sh
