@@ -60,4 +60,6 @@
         src: ../target/student-reg-webapp.war # while running from jenkins
         dest: /opt/apache-tomcat-9.0.108/webapps/
         mode: '0644'
-        force: yes      # Overwrite existing WAR file
+        group: ec2-user 
+        owner: ec2-user
+        force: yes      # Overwrite existing WAR file whenever new deployment happens
