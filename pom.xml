@@ -25,11 +25,11 @@
     <distributionManagement>
 		<repository>
 			<id>nexus</id>
-			<url>http://40.192.67.215:8081/repository/student-webapp-release/</url>
+			<url>http://172.105.43.12:8081/repository/ashish-releases-repo/</url>
 		</repository>
 		<snapshotRepository>
 			<id>nexus</id>
-			<url>http://40.192.67.215:8081/repository/student-webapp-snapshots/</url>
+			<url>http://172.105.43.12:8081/repository/ashish-snapshots-repo/</url>
 		</snapshotRepository>
     </distributionManagement>
 
